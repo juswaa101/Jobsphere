@@ -109,9 +109,8 @@
             $('#applicantTable').on('click', '.view-resume', function() {
                 const userId = $(this).data('user-id'); // User ID
                 const jobId = $(this).data('job-id'); // Job ID
-                const resumeLink = $(this).data('resume-link');
 
-                // Populate the modal
+                // AJAX request to fetch applicant details
                 $.ajax({
                     url: `{{ route('job.get.application', ['user' => ':user', 'job' => ':job']) }}`
                         .replace(':user', userId)
@@ -133,26 +132,19 @@
                         $('#applicantResumeLink').attr('href',
                             resumeUrl); // Set link for download
                         $('#applicantResumeLink').text('Download Resume'); // Update link text
+                        $('#resumeMessage').hide(); // Hide message by default
 
-                        // Check file extension to determine how to display
+                        // Check file extension to determine display format
                         if (resumeUrl) {
                             const fileExtension = resumeUrl.split('.').pop().toLowerCase();
 
+                            // Attempt to display PDF and common image formats
                             if (fileExtension === 'pdf') {
-                                // Show PDF in iframe using Google Docs Viewer
-                                $('#resumeContent').attr('src',
-                                    `https://docs.google.com/gview?url=${resumeUrl}&embedded=true`
-                                );
-                                $('#resumeContent').show(); // Show iframe
-                            } else if (fileExtension === 'doc' || fileExtension === 'docx') {
-                                // Hide iframe and show message for unsupported Word files
-                                $('#resumeContent').hide(); // Hide iframe
-                                $('#resumeMessage').text(
-                                    'This file type is not supported for viewing in the browser. Please download it.'
-                                ).show();
+                                $('#resumeContent').attr('src', resumeUrl)
+                                    .show(); // Show iframe with file
                             } else {
-                                // For any other unsupported formats
-                                $('#resumeContent').hide(); // Hide iframe
+                                // Hide iframe and show message for unsupported files
+                                $('#resumeContent').hide();
                                 $('#resumeMessage').text(
                                     'This file type is not supported for viewing in the browser. Please download it.'
                                 ).show();
