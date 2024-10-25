@@ -19,6 +19,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// Home Page
+Route::get('/', function () {
+    return view('page.welcome');
+})->name('home');
+
 // Authentication Routes (Login, Register)
 Route::group(['middleware' => 'guest'], function () {
     Route::get('/login', [LoginController::class, 'loginPage'])
